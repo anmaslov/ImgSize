@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -30,15 +29,12 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(text)
 }
 
+const lenPath = len("/download/")
+
 //GET request for article with ID
-func PostArticleWithId(w http.ResponseWriter, r *http.Request) {
-
-	reqBody, _ := ioutil.ReadAll(r.Body)
-	var article Article
-	json.Unmarshal(reqBody, &article) // Считываем все из тела зпроса в подготовленный пустой объект Article
-
-	Articles = append(Articles, article)
-	json.NewEncoder(w).Encode(article)
+func GetArticleWithId(w http.ResponseWriter, r *http.Request) {
+	name := "<form method='POST' action='/add'>URL: <input type='text' name='url'><input type='submit' value='Add'></form>"
+	fmt.Fprintf(w, name)
 
 	//if len(os.Args) != 3 {
 	//	fmt.Println(vars)
@@ -82,13 +78,11 @@ func PostArticleWithId(w http.ResponseWriter, r *http.Request) {
 //}
 
 func main() {
-	//Добавляю 2 статьи в свою базу
 	fmt.Println("REST API V2.0 worked....")
-	//СОздаю свой маршрутизатор на основе либы mux
 	myRouter := mux.NewRouter().StrictSlash(true)
 
 	myRouter.HandleFunc("/articles", GetAllArticles).Methods("GET")
-	myRouter.HandleFunc("/article/", PostArticleWithId).Methods("POST")
+	myRouter.HandleFunc("/download/", GetArticleWithId).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", myRouter))
 }
